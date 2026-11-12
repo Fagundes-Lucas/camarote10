@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Encerramento Camarote 10</title>
+<meta property="og:title" content="Encerramento Camarote 10 - marca teus dias">
+<meta property="og:description" content="Toca nos dias que você pode. Leva 1 minuto.">
+<meta property="og:image" content="https://fagundes-lucas.github.io/camarote10/time.jpg">
+<meta name="theme-color" content="#b3202a">
+<style>
+  :root{
+    --red:#b3202a; --red-d:#8c1820; --ink:#1d1d1f; --muted:#6b6b72; --line:#e6e6ea; --bg:#f6f6f7;
+    --pode:#1f9d61; --talvez:#e3a008; --nao:#d23c3c;
+    --pode-bg:#d7f2e4; --talvez-bg:#fdf0cc; --nao-bg:#f9d9d9;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:480px;margin:0 auto;min-height:100vh;background:#fff;padding-bottom:110px}
+  header{position:relative}
+  header img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+  header .over{position:absolute;inset:auto 0 0 0;padding:28px 16px 12px;color:#fff;
+    background:linear-gradient(transparent,rgba(0,0,0,.75))}
+  header h1{margin:0;font-size:22px;line-height:1.15}
+  header p{margin:2px 0 0;font-size:14px;opacity:.9}
+  .stripe{height:6px;background:repeating-linear-gradient(135deg,var(--red) 0 18px,#fff 18px 26px)}
+  nav{display:flex;position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line)}
+  nav button{flex:1;border:0;background:none;padding:14px 0;font-size:15px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent}
+  nav button.on{color:var(--red);border-bottom-color:var(--red)}
+  section{padding:16px}
+  h2{font-size:17px;margin:4px 0 10px}
+  .hint{color:var(--muted);font-size:14px;margin:0 0 12px}
+  .names{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .name{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:14px 12px;text-align:left;font-size:16px;font-weight:600;color:var(--ink)}
+  .name small{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
+  .name.done small{color:var(--pode)}
+  .name:active{background:#fafafa}
+  .who{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .who b{font-size:17px}
+  .link{background:none;border:0;color:var(--red);font-size:14px;padding:6px 0}
+  .brush{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;position:sticky;top:49px;z-index:4;background:#fff;padding:6px 0}
+  .brush button{border:2px solid var(--line);border-radius:10px;background:#fff;padding:10px 2px;font-size:13px;font-weight:700;color:var(--ink)}
+  .brush button i{display:block;width:16px;height:16px;border-radius:50%;margin:0 auto 4px}
+  .brush .b-pode i{background:var(--pode)} .brush .b-talvez i{background:var(--talvez)} .brush .b-nao i{background:var(--nao)}
+  .brush .b-limpar i{background:#fff;border:2px solid #bbb}
+  .brush button.on{border-color:var(--ink);background:#f3f3f5}
+  .month{margin:6px 0 18px}
+  .month h3{margin:0 0 8px;font-size:15px;text-transform:capitalize}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .wd{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0}
+  .wd.we{color:var(--red)}
+  .day{aspect-ratio:1;border-radius:9px;border:1.5px solid var(--line);background:#fff;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;font-size:15px;font-weight:600;color:var(--ink);padding:0;position:relative;user-select:none}
+  .day small{font-size:9px;font-weight:500;color:var(--muted);line-height:1}
+  .day.out{border-color:transparent;color:#c9c9ce;background:transparent}
+  .day.out small{visibility:hidden}
+  .day.blk{background:repeating-linear-gradient(135deg,#f1f1f3 0 5px,#e4e4e8 5px 7px);color:#a6a6ad;border-color:transparent}
+  .day.pode{background:var(--pode);border-color:var(--pode);color:#fff}
+  .day.talvez{background:var(--talvez);border-color:var(--talvez);color:#fff}
+  .day.nao{background:var(--nao);border-color:var(--nao);color:#fff}
+  .day.pode small,.day.talvez small,.day.nao small{color:rgba(255,255,255,.85)}
+  .day.today::after{content:"";position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:currentColor}
+  .quick{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+  .quick button{border:1px solid var(--line);background:#fafafa;border-radius:999px;padding:8px 12px;font-size:13px;color:var(--ink)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;background:var(--c)}
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:#fff;border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+  .bar .in{max-width:448px;margin:0 auto}
+  .counts{font-size:12px;color:var(--muted);margin-bottom:6px;text-align:center}
+  .counts b.p{color:var(--pode)} .counts b.t{color:var(--talvez)} .counts b.n{color:var(--nao)}
+  .save{width:100%;border:0;border-radius:12px;background:var(--red);color:#fff;font-size:16px;font-weight:700;padding:15px}
+  .save:disabled{opacity:.6}
+  .status{background:#fafafa;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:14px;margin-bottom:14px}
+  .status .miss{color:var(--nao)}
+  .rank{list-style:none;padding:0;margin:0}
+  .rank li{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+  .rank li.top{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset}
+  .rank summary{list-style:none;padding:12px;display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;cursor:pointer}
+  .rank summary::-webkit-details-marker{display:none}
+  .pos{font-weight:800;color:var(--muted);font-size:15px}
+  .top .pos{color:var(--red)}
+  .dt{font-weight:700}
+  .pts{font-weight:800;font-size:15px}
+  .stack{grid-column:2/4;display:flex;height:8px;border-radius:4px;overflow:hidden;background:#eee}
+  .stack i{display:block;height:100%}
+  .detail{padding:0 12px 12px 48px;font-size:13px}
+  .detail div{margin-top:3px}
+  .detail b{display:inline-block;min-width:62px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--pode);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:1px}
+  .empty{color:var(--muted);text-align:center;padding:30px 10px}
+  .toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+    padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.25s;z-index:20;pointer-events:none;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .mock{background:#fff4d6;color:#7a5a00;font-size:12px;text-align:center;padding:6px}
+  .crest{position:absolute;top:12px;right:12px;width:64px;height:64px;border-radius:50%;background:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center}
+  .crest img{width:auto;height:52px;aspect-ratio:auto;object-fit:contain}
+  .day.ev::before{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#111;border:1.5px solid #fff}
+  .jogos{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;margin-top:4px}
+  .jogos b{display:block;margin-bottom:4px;font-size:14px}
+  .jogos div{display:flex;gap:8px;padding:2px 0}
+  .jogos span:first-child{font-weight:700;min-width:70px}
+  .evn{display:block;font-size:12px;font-weight:500;color:var(--red)}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="mock" class="mock hidden">Modo teste: nada é salvo de verdade (falta colar a URL do Apps Script).</div>
+  <header>
+    <img src="time.jpg" alt="Foto do time">
+    <div class="crest"><img src="escudo.png" alt="JEC Futsal"></div>
+    <div class="over">
+      <h1 id="titulo">Encerramento Camarote 10</h1>
+      <p>Marca os dias que tu pode. Leva 1 minuto.</p>
+    </div>
+  </header>
+  <div class="stripe"></div>
+  <nav>
+    <button id="tabMarcar" class="on">Marcar meus dias</button>
+    <button id="tabRes">Resultado</button>
+  </nav>
+
+  <!-- 1. Escolher nome -->
+  <section id="telaNome">
+    <h2>Quem é você?</h2>
+    <p class="hint">Toca no teu nome. Se já respondeu, dá pra editar.</p>
+    <div id="names" class="names"><div class="empty">Carregando...</div></div>
+  </section>
+
+  <!-- 2. Calendário -->
+  <section id="telaCal" class="hidden">
+    <div class="who"><b id="euNome"></b><button class="link" id="trocar">Não é você? Trocar</button></div>
+    <p class="hint">Escolhe a cor e toca nos dias. Tocar de novo apaga.</p>
+    <div class="brush" id="brush">
+      <button class="b-pode on" data-b="pode"><i></i>Pode</button>
+      <button class="b-talvez" data-b="talvez"><i></i>Talvez</button>
+      <button class="b-nao" data-b="nao"><i></i>Não pode</button>
+      <button class="b-limpar" data-b="limpar"><i></i>Apagar</button>
+    </div>
+    <div class="quick">
+      <button data-q="fds">Fins de semana: Pode</button>
+      <button data-q="vazios">Dias em branco: Não pode</button>
+      <button data-q="limpar">Limpar tudo</button>
+    </div>
+    <div class="legend">
+      <span style="--c:var(--pode)">Pode</span><span style="--c:var(--talvez)">Talvez</span>
+      <span style="--c:var(--nao)">Não pode</span><span style="--c:#d9d9de">Bloqueado</span><span style="--c:#111">Jogo do JEC</span>
+    </div>
+    <div id="cal"></div>
+    <div id="jogos" class="jogos"></div>
+  </section>
+
+  <!-- 3. Resultado -->
+  <section id="telaRes" class="hidden">
+    <div id="status" class="status"></div>
+    <h2>Melhores dias</h2>
+    <p class="hint">Pode vale 1 ponto, Talvez vale 0,5. Toca num dia pra ver quem vai.</p>
+    <ol id="rank" class="rank"></ol>
+    <div style="text-align:center"><button class="link" id="verTodos">Ver todos os dias</button></div>
+  </section>
+</div>
+
+<div class="bar hidden" id="bar">
+  <div class="in">
+    <div class="counts" id="counts"></div>
+    <button class="save" id="save">Salvar</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== CONFIGURAÇÃO: cole aqui a URL do App da Web do Apps Script ===== */
+const SCRIPT_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
+/* ====================================================================== */
+
+const MOCK = SCRIPT_URL.indexOf('COLE_AQUI') !== -1;
+const CFG_PADRAO = {
+  titulo: 'Encerramento Camarote 10',
+  participantes: ['Lucas','Gu','Henrique','China','Mica','Thiagol','Willian','Willbert','Ivanor'],
+  inicio: '2026-11-12', fim: '2026-12-31',
+  bloqueados: ['2026-12-24','2026-12-25','2026-12-31'],
+  eventos: {'2026-11-14':'Semi ida LNF','2026-11-20':'Semi volta LNF','2026-11-28':'Semi volta Catarinense'}
+};
+const DS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+let CFG = CFG_PADRAO, RESP = {}, eu = null, marcas = {}, pincel = 'pode', sujo = false, todos = false, tela = 'nome';
+const $ = s => document.querySelector(s);
+
+/* ---------- datas (tudo em string AAAA-MM-DD, sem fuso) ---------- */
+const parse = d => { const [y,m,dd] = d.split('-').map(Number); return new Date(Date.UTC(y,m-1,dd,12)); };
+const fmt = dt => dt.toISOString().slice(0,10);
+function listaDatas(){ const out=[]; for(let t=parse(CFG.inicio).getTime(), f=parse(CFG.fim).getTime(); t<=f; t+=864e5) out.push(fmt(new Date(t))); return out; }
+const dow = d => parse(d).getUTCDay();
+const rot = d => { const [y,m,dd]=d.split('-'); return DS[dow(d)]+', '+dd+'/'+m; };
+const hoje = (() => { const n=new Date(); return fmt(new Date(Date.UTC(n.getFullYear(),n.getMonth(),n.getDate(),12))); })();
+const bloqueado = d => CFG.bloqueados.indexOf(d) !== -1;
+const evento = d => (CFG.eventos || {})[d] || '';
+const validas = () => listaDatas().filter(d => !bloqueado(d));
+
+/* ---------- servidor ---------- */
+async function carregar(){
+  if (MOCK) { $('#mock').classList.remove('hidden'); return; }
+  const r = await fetch(SCRIPT_URL, {cache:'no-store'});
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.erro || 'erro');
+  CFG = j.config; RESP = {};
+  j.respostas.forEach(x => RESP[x.nome] = x.marcas || {});
+}
+async function salvar(){
+  const btn = $('#save'); btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    if (MOCK) { RESP[eu] = Object.assign({}, marcas); }
+    else {
+      const r = await fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({nome:eu, marcas})});
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.erro || 'erro');
+      RESP = {}; j.respostas.forEach(x => RESP[x.nome] = x.marcas || {});
+    }
+    sujo = false; toast('Salvo! Valeu, ' + eu + '.');
+    ir('res');
+  } catch(e) {
+    toast('Não salvou. Confere a internet e tenta de novo.');
+  } finally { btn.disabled = false; atualizarBarra(); }
+}
+
+/* ---------- navegação ---------- */
+function ir(t){
+  tela = t;
+  $('#telaNome').classList.toggle('hidden', t !== 'nome');
+  $('#telaCal').classList.toggle('hidden', t !== 'cal');
+  $('#telaRes').classList.toggle('hidden', t !== 'res');
+  $('#tabMarcar').classList.toggle('on', t !== 'res');
+  $('#tabRes').classList.toggle('on', t === 'res');
+  $('#bar').classList.toggle('hidden', t !== 'cal');
+  if (t === 'nome') renderNomes();
+  if (t === 'cal') renderCal();
+  if (t === 'res') renderRes();
+  window.scrollTo({top: t === 'nome' ? 0 : document.querySelector('header').offsetHeight, behavior:'smooth'});
+}
+
+/* ---------- tela de nomes ---------- */
+function renderNomes(){
+  $('#titulo').textContent = CFG.titulo;
+  $('#names').innerHTML = CFG.participantes.map(n => {
+    const ok = RESP[n] && Object.keys(RESP[n]).length;
+    return `<button class="name ${ok?'done':''}" data-n="${n}">${n}<small>${ok?'Já respondeu - editar':'Ainda não respondeu'}</small></button>`;
+  }).join('');
+}
+$('#names').addEventListener('click', e => {
+  const b = e.target.closest('.name'); if (!b) return;
+  eu = b.dataset.n; marcas = Object.assign({}, RESP[eu] || {}); sujo = false;
+  try { localStorage.setItem('encontro_nome', eu); } catch(_) {}
+  $('#euNome').textContent = 'Oi, ' + eu + '!';
+  ir('cal');
+});
+$('#trocar').onclick = () => { if (sujo && !confirm('Tu tem marcações não salvas. Trocar mesmo assim?')) return; eu = null; ir('nome'); };
+
+/* ---------- calendário ---------- */
+function renderCal(){
+  const ds = listaDatas(), set = new Set(ds);
+  const meses = [...new Set(ds.map(d => d.slice(0,7)))];
+  $('#cal').innerHTML = meses.map(ym => {
+    const [y,m] = ym.split('-').map(Number);
+    const n = new Date(Date.UTC(y,m,0)).getUTCDate();
+    const pad = new Date(Date.UTC(y,m-1,1,12)).getUTCDay();
+    let h = `<div class="month"><h3>${MESES[m-1]} ${y}</h3><div class="grid">`;
+    h += DS.map((w,i) => `<div class="wd ${i===0||i===6?'we':''}">${w}</div>`).join('');
+    for (let i=0;i<pad;i++) h += '<div></div>';
+    for (let dd=1; dd<=n; dd++){
+      const d = ym + '-' + String(dd).padStart(2,'0');
+      let cls = 'day';
+      if (!set.has(d)) cls += ' out';
+      else if (bloqueado(d)) cls += ' blk';
+      else if (marcas[d]) cls += ' ' + marcas[d];
+      if (d === hoje) cls += ' today';
+      if (set.has(d) && evento(d)) cls += ' ev';
+      h += `<button class="${cls}" data-d="${d}">${dd}<small>${DS[dow(d)]}</small></button>`;
+    }
+    return h + '</div></div>';
+  }).join('');
+  const ev = Object.keys(CFG.eventos || {}).sort();
+  $('#jogos').classList.toggle('hidden', !ev.length);
+  $('#jogos').innerHTML = '<b>Jogos do JEC no período</b>' + ev.map(d => `<div><span>${rot(d)}</span><span>${CFG.eventos[d]}</span></div>`).join('');
+  atualizarBarra();
+}
+function pintar(d, alvo){
+  if (alvo === 'limpar' || marcas[d] === alvo) delete marcas[d]; else marcas[d] = alvo;
+  const el = document.querySelector(`.day[data-d="${d}"]`);
+  el.classList.remove('pode','talvez','nao');
+  if (marcas[d]) el.classList.add(marcas[d]);
+  sujo = true; atualizarBarra();
+}
+$('#cal').addEventListener('click', e => {
+  const b = e.target.closest('.day'); if (!b) return;
+  const d = b.dataset.d;
+  if (b.classList.contains('out')) return;
+  if (b.classList.contains('blk')) { toast(rot(d) + ' está bloqueado'); return; }
+  pintar(d, pincel);
+  toast(rot(d) + ': ' + ({pode:'Pode',talvez:'Talvez',nao:'Não pode'}[marcas[d]] || 'apagado') + (evento(d) ? ' (jogo: ' + evento(d) + ')' : ''));
+});
+$('#brush').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  pincel = b.dataset.b;
+  document.querySelectorAll('#brush button').forEach(x => x.classList.toggle('on', x === b));
+});
+document.querySelector('.quick').addEventListener('click', e => {
+  const q = e.target.closest('button'); if (!q) return;
+  const v = validas();
+  if (q.dataset.q === 'fds') v.filter(d => [0,6].includes(dow(d))).forEach(d => marcas[d] = 'pode');
+  if (q.dataset.q === 'vazios') v.filter(d => !marcas[d]).forEach(d => marcas[d] = 'nao');
+  if (q.dataset.q === 'limpar') { if (!confirm('Apagar todas as tuas marcações?')) return; marcas = {}; }
+  sujo = true; renderCal();
+});
+function atualizarBarra(){
+  const v = validas(); let p=0,t=0,n=0;
+  v.forEach(d => { if (marcas[d]==='pode') p++; else if (marcas[d]==='talvez') t++; else if (marcas[d]==='nao') n++; });
+  const b = v.length - p - t - n;
+  $('#counts').innerHTML = `<b class="p">${p}</b> pode · <b class="t">${t}</b> talvez · <b class="n">${n}</b> não · ${b} em branco`;
+  $('#save').textContent = sujo ? 'Salvar minha disponibilidade' : (RESP[eu] ? 'Salvo - ver resultado' : 'Salvar minha disponibilidade');
+}
+$('#save').onclick = () => {
+  if (!sujo && RESP[eu]) { ir('res'); return; }
+  if (!Object.keys(marcas).length) { toast('Marca pelo menos um dia'); return; }
+  salvar();
+};
+
+/* ---------- resultado ---------- */
+function renderRes(){
+  const nomes = CFG.participantes;
+  const resp = nomes.filter(n => RESP[n] && Object.keys(RESP[n]).length);
+  const faltam = nomes.filter(n => resp.indexOf(n) === -1);
+  $('#status').innerHTML = `<b>${resp.length} de ${nomes.length}</b> responderam.` +
+    (faltam.length ? `<div class="miss">Faltam: ${faltam.join(', ')}</div>` : '<div>Todo mundo respondeu.</div>');
+
+  const linhas = validas().map(d => {
+    const g = {pode:[],talvez:[],nao:[],branco:[]};
+    resp.forEach(n => g[RESP[n][d] || 'branco'].push(n));
+    return {d, g, pts: g.pode.length + 0.5*g.talvez.length};
+  }).sort((a,b) => b.pts - a.pts || a.g.nao.length - b.g.nao.length || a.d.localeCompare(b.d));
+
+  if (!resp.length) { $('#rank').innerHTML = '<div class="empty">Ninguém respondeu ainda. Seja o primeiro!</div>'; $('#verTodos').classList.add('hidden'); return; }
+  const lista = todos ? linhas : linhas.filter(l => l.pts > 0).slice(0,10);
+  const max = resp.length;
+  $('#rank').innerHTML = lista.map((l,i) => {
+    const w = k => (100 * l.g[k].length / max) + '%';
+    const todosPodem = l.g.pode.length === max;
+    const li = (k, lab) => l.g[k].length ? `<div><b>${lab}</b> ${l.g[k].join(', ')}</div>` : '';
+    return `<li class="${i<3 && l.pts>0 ? 'top':''}"><details><summary>
+      <span class="pos">${i+1}º</span><span class="dt">${rot(l.d)}${todosPodem?'<span class="tag">todos podem</span>':''}${evento(l.d)?'<span class="evn">Jogo: '+evento(l.d)+'</span>':''}</span>
+      <span class="pts">${String(l.pts).replace('.',',')}</span>
+      <span class="stack"><i style="width:${w('pode')};background:var(--pode)"></i><i style="width:${w('talvez')};background:var(--talvez)"></i><i style="width:${w('nao')};background:var(--nao)"></i></span>
+      </summary><div class="detail">${li('pode','Pode:')}${li('talvez','Talvez:')}${li('nao','Não pode:')}${li('branco','Sem marcar:')}</div></details></li>`;
+  }).join('') || '<div class="empty">Nenhum dia com "Pode" ainda.</div>';
+  $('#verTodos').classList.remove('hidden');
+  $('#verTodos').textContent = todos ? 'Ver só os melhores' : 'Ver todos os dias';
+}
+$('#verTodos').onclick = () => { todos = !todos; renderRes(); };
+
+/* ---------- abas e utilidades ---------- */
+$('#tabRes').onclick = async () => { ir('res'); try { await carregar(); renderRes(); } catch(_){} };
+$('#tabMarcar').onclick = () => ir(eu ? 'cal' : 'nome');
+let tt; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),1600); }
+window.addEventListener('beforeunload', e => { if (sujo) { e.preventDefault(); e.returnValue=''; } });
+setInterval(async () => { if (tela === 'res' && !MOCK) { try { await carregar(); renderRes(); } catch(_){} } }, 30000);
+
+(async () => {
+  try { await carregar(); }
+  catch(e) { $('#names').innerHTML = '<div class="empty">Não consegui carregar. Fecha e abre o link de novo.</div>'; return; }
+  renderNomes();
+})();
+</script>
+</body>
+</html>
