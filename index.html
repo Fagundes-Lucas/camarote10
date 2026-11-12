@@ -101,6 +101,21 @@
   .jogos div{display:flex;gap:8px;padding:2px 0}
   .jogos span:first-child{font-weight:700;min-width:70px}
   .evn{display:block;font-size:12px;font-weight:500;color:var(--red)}
+  .av{width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-size:11px;font-weight:700;display:inline-flex;
+    align-items:center;justify-content:center;object-fit:cover;flex:none;border:2px solid #fff}
+  .av.lg{width:40px;height:40px;font-size:15px}
+  .name{display:flex;align-items:center;gap:10px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px 3px 3px;font-size:13px;font-weight:600;background:#f1f1f3}
+  .chip.pode{background:var(--pode-bg)} .chip.talvez{background:var(--talvez-bg)} .chip.nao{background:var(--nao-bg)}
+  .quem{grid-column:2/4;display:flex;flex-wrap:wrap;gap:4px}
+  .hm .day{cursor:pointer}
+  .hm .day b{font-size:10px;font-weight:700;line-height:1;margin-top:2px}
+  .hm .day.sel{outline:3px solid var(--ink);outline-offset:1px}
+  .painel{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0 18px}
+  .painel h4{margin:0;font-size:16px}
+  .grp{margin-top:10px}
+  .grp>small{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px}
   .hidden{display:none !important}
 </style>
 </head>
@@ -154,8 +169,12 @@
   <!-- 3. Resultado -->
   <section id="telaRes" class="hidden">
     <div id="status" class="status"></div>
+    <h2>Quem pode em cada dia</h2>
+    <p class="hint">Quanto mais verde, mais gente pode. Toca num dia pra ver quem.</p>
+    <div id="hm" class="hm"></div>
+    <div id="painel" class="painel"></div>
     <h2>Melhores dias</h2>
-    <p class="hint">Pode vale 1 ponto, Talvez vale 0,5. Toca num dia pra ver quem vai.</p>
+    <p class="hint">Pode vale 1 ponto, Talvez vale 0,5. Toca num dia pra ver talvez e não pode.</p>
     <ol id="rank" class="rank"></ol>
     <div style="text-align:center"><button class="link" id="verTodos">Ver todos os dias</button></div>
   </section>
@@ -175,6 +194,11 @@ const SCRIPT_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
 /* ====================================================================== */
 
 const MOCK = SCRIPT_URL.indexOf('COLE_AQUI') !== -1;
+/* Fotos de cada um (arquivo na pasta fotos/). Sem foto, aparecem as iniciais. */
+const FOTOS = {
+  Lucas:'fotos/lucas.jpg', Gu:'fotos/gu.jpg', Willian:'fotos/willian.jpg', Mica:'fotos/mica.jpg', Henrique:'fotos/henrique.jpg',
+  Ivanor:'fotos/ivanor.jpg', Thiagol:'fotos/thiagol.jpg', Willbert:'fotos/willbert.jpg', China:'fotos/china.jpg'
+};
 const CFG_PADRAO = {
   titulo: 'Encerramento Camarote 10',
   participantes: ['Lucas','Gu','Henrique','China','Mica','Thiagol','Willian','Willbert','Ivanor'],
@@ -185,6 +209,7 @@ const CFG_PADRAO = {
 const DS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 
+let diaSel = null;
 let CFG = CFG_PADRAO, RESP = {}, eu = null, marcas = {}, pincel = 'pode', sujo = false, todos = false, tela = 'nome';
 const $ = s => document.querySelector(s);
 
@@ -198,6 +223,11 @@ const hoje = (() => { const n=new Date(); return fmt(new Date(Date.UTC(n.getFull
 const bloqueado = d => CFG.bloqueados.indexOf(d) !== -1;
 const evento = d => (CFG.eventos || {})[d] || '';
 const validas = () => listaDatas().filter(d => !bloqueado(d));
+
+/* ---------- avatares ---------- */
+const ini = n => n.slice(0,2).toUpperCase();
+const av = (n, lg) => FOTOS[n] ? `<img class="av ${lg?'lg':''}" src="${FOTOS[n]}" alt="${n}">` : `<span class="av ${lg?'lg':''}">${ini(n)}</span>`;
+const chip = (n, k) => `<span class="chip ${k||''}">${av(n)}${n}</span>`;
 
 /* ---------- servidor ---------- */
 async function carregar(){
@@ -245,7 +275,7 @@ function renderNomes(){
   $('#titulo').textContent = CFG.titulo;
   $('#names').innerHTML = CFG.participantes.map(n => {
     const ok = RESP[n] && Object.keys(RESP[n]).length;
-    return `<button class="name ${ok?'done':''}" data-n="${n}">${n}<small>${ok?'Já respondeu - editar':'Ainda não respondeu'}</small></button>`;
+    return `<button class="name ${ok?'done':''}" data-n="${n}">${av(n,1)}<span>${n}<small>${ok?'Já respondeu - editar':'Ainda não respondeu'}</small></span></button>`;
   }).join('');
 }
 $('#names').addEventListener('click', e => {
@@ -340,22 +370,51 @@ function renderRes(){
     return {d, g, pts: g.pode.length + 0.5*g.talvez.length};
   }).sort((a,b) => b.pts - a.pts || a.g.nao.length - b.g.nao.length || a.d.localeCompare(b.d));
 
+  renderMapa(resp, linhas);
   if (!resp.length) { $('#rank').innerHTML = '<div class="empty">Ninguém respondeu ainda. Seja o primeiro!</div>'; $('#verTodos').classList.add('hidden'); return; }
   const lista = todos ? linhas : linhas.filter(l => l.pts > 0).slice(0,10);
   const max = resp.length;
   $('#rank').innerHTML = lista.map((l,i) => {
     const w = k => (100 * l.g[k].length / max) + '%';
-    const todosPodem = l.g.pode.length === max;
+    const todosPodem = l.g.pode.length === CFG.participantes.length;
     const li = (k, lab) => l.g[k].length ? `<div><b>${lab}</b> ${l.g[k].join(', ')}</div>` : '';
     return `<li class="${i<3 && l.pts>0 ? 'top':''}"><details><summary>
       <span class="pos">${i+1}º</span><span class="dt">${rot(l.d)}${todosPodem?'<span class="tag">todos podem</span>':''}${evento(l.d)?'<span class="evn">Jogo: '+evento(l.d)+'</span>':''}</span>
       <span class="pts">${String(l.pts).replace('.',',')}</span>
       <span class="stack"><i style="width:${w('pode')};background:var(--pode)"></i><i style="width:${w('talvez')};background:var(--talvez)"></i><i style="width:${w('nao')};background:var(--nao)"></i></span>
-      </summary><div class="detail">${li('pode','Pode:')}${li('talvez','Talvez:')}${li('nao','Não pode:')}${li('branco','Sem marcar:')}</div></details></li>`;
+      <span class="quem">${l.g.pode.map(n => chip(n,'pode')).join('')}</span>
+      </summary><div class="detail">${li('talvez','Talvez:')}${li('nao','Não pode:')}${li('branco','Sem marcar:')}</div></details></li>`;
   }).join('') || '<div class="empty">Nenhum dia com "Pode" ainda.</div>';
   $('#verTodos').classList.remove('hidden');
   $('#verTodos').textContent = todos ? 'Ver só os melhores' : 'Ver todos os dias';
 }
+function renderMapa(resp, linhas){
+  const info = {}; linhas.forEach(l => info[l.d] = l);
+  const max = Math.max(resp.length, 1);
+  if (!diaSel || !info[diaSel]) diaSel = (linhas.find(l => l.pts > 0) || linhas[0] || {}).d;
+  const ds = listaDatas(), set = new Set(ds);
+  $('#hm').innerHTML = [...new Set(ds.map(d => d.slice(0,7)))].map(ym => {
+    const [y,m] = ym.split('-').map(Number);
+    const n = new Date(Date.UTC(y,m,0)).getUTCDate(), pad = new Date(Date.UTC(y,m-1,1,12)).getUTCDay();
+    let h = `<div class="month"><h3>${MESES[m-1]} ${y}</h3><div class="grid">` + DS.map((w,i) => `<div class="wd ${i===0||i===6?'we':''}">${w}</div>`).join('');
+    for (let i=0;i<pad;i++) h += '<div></div>';
+    for (let dd=1; dd<=n; dd++){
+      const d = ym + '-' + String(dd).padStart(2,'0'), l = info[d];
+      if (!set.has(d)) { h += `<div class="day out">${dd}</div>`; continue; }
+      if (!l) { h += `<div class="day blk">${dd}<small>${DS[dow(d)]}</small></div>`; continue; }
+      const a = resp.length ? l.pts / max : 0;
+      const forte = a >= .55;
+      h += `<div class="day ${evento(d)?'ev':''} ${d===diaSel?'sel':''}" data-d="${d}" style="background:rgba(31,157,97,${(0.08 + a*0.92).toFixed(2)});border-color:transparent;color:${forte?'#fff':'var(--ink)'}">${dd}<b>${l.g.pode.length}${l.g.talvez.length?'+'+l.g.talvez.length:''}</b></div>`;
+    }
+    return h + '</div></div>';
+  }).join('');
+  const l = info[diaSel];
+  if (!l) { $('#painel').innerHTML = ''; return; }
+  const grp = (k, lab) => l.g[k].length ? `<div class="grp"><small>${lab} (${l.g[k].length})</small><div class="chips">${l.g[k].map(n => chip(n,k)).join('')}</div></div>` : '';
+  $('#painel').innerHTML = `<h4>${rot(diaSel)}${evento(diaSel)?' <span class="evn">Jogo: '+evento(diaSel)+'</span>':''}</h4>` +
+    (resp.length ? grp('pode','Pode') + grp('talvez','Talvez') + grp('nao','Não pode') + grp('branco','Sem marcar') : '<div class="grp"><small>Ninguém respondeu ainda.</small></div>');
+}
+$('#hm').addEventListener('click', e => { const c = e.target.closest('.day[data-d]'); if (!c) return; diaSel = c.dataset.d; renderRes(); });
 $('#verTodos').onclick = () => { todos = !todos; renderRes(); };
 
 /* ---------- abas e utilidades ---------- */
