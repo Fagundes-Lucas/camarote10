@@ -109,7 +109,12 @@
   .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px 3px 3px;font-size:13px;font-weight:600;background:#f1f1f3}
   .chip.pode{background:var(--pode-bg)} .chip.talvez{background:var(--talvez-bg)} .chip.nao{background:var(--nao-bg)}
   .quem{grid-column:2/4;display:flex;flex-wrap:wrap;gap:4px}
-  .hm .day{cursor:pointer}
+  .hm .grid{gap:3px}
+  .hm .day{cursor:pointer;aspect-ratio:auto;min-height:66px;justify-content:flex-start;padding-top:4px;gap:2px}
+  .hm .day.out,.hm .day.blk{min-height:66px}
+  .faces{display:flex;flex-wrap:wrap;justify-content:center;gap:1px;padding:0 2px}
+  .faces .av{width:15px;height:15px;border-width:1px;font-size:7px}
+  .faces i{font-style:normal;font-size:9px;font-weight:700}
   .hm .day b{font-size:10px;font-weight:700;line-height:1;margin-top:2px}
   .hm .day.sel{outline:3px solid var(--ink);outline-offset:1px}
   .painel{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0 18px}
@@ -404,7 +409,7 @@ function renderMapa(resp, linhas){
       if (!l) { h += `<div class="day blk">${dd}<small>${DS[dow(d)]}</small></div>`; continue; }
       const a = resp.length ? l.pts / max : 0;
       const forte = a >= .55;
-      h += `<div class="day ${evento(d)?'ev':''} ${d===diaSel?'sel':''}" data-d="${d}" style="background:rgba(31,157,97,${(0.08 + a*0.92).toFixed(2)});border-color:transparent;color:${forte?'#fff':'var(--ink)'}">${dd}<b>${l.g.pode.length}${l.g.talvez.length?'+'+l.g.talvez.length:''}</b></div>`;
+      h += `<div class="day ${evento(d)?'ev':''} ${d===diaSel?'sel':''}" data-d="${d}" style="background:rgba(31,157,97,${(0.08 + a*0.92).toFixed(2)});border-color:transparent;color:${forte?'#fff':'var(--ink)'}">${dd}<span class="faces">${l.g.pode.slice(0,6).map(n => av(n)).join('')}${l.g.pode.length>6?'<i>+'+(l.g.pode.length-6)+'</i>':''}</span></div>`;
     }
     return h + '</div></div>';
   }).join('');
